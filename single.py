@@ -9,8 +9,8 @@ import pandas as pd
 def single():
 
     upload = False
-    model_path = "/home/alberto/Desktop/training_data/models/frozen_models/frozen_inference_graph.pb" #mobilnet_fpn w/ traffic cameras
-    cap = cv2.VideoCapture('/home/alberto/Desktop/ITS/DTSM 083019 1700 - 2230.AVI')
+    model_path = "frozen_inference_graph.pb" #mobilnet_fpn w/ traffic cameras
+    cap = cv2.VideoCapture('/home/alberto/Desktop/ITS/its_video.AVI')
 
     # ITS video start time
     its_time_human = '30.08.2019 17:00:04'

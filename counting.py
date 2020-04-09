@@ -3,7 +3,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import numpy as np
 import csv, time
-import altair as alt
+#import altair as alt
 import pandas as pd
 #import fire_push
 
