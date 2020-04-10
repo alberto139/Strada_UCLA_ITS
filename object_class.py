@@ -21,7 +21,7 @@ class Object():
         self.subimg = frame[self.ymin:self.ymax, self.xmin:self.xmax]
         self.x = self.xmin +(self.xmax - self.xmin) // 2
         self.y = (self.ymin +(self.ymax - self.ymin) // 2)
-        self.y = int(self.y + self.height * .25) # increase y to compensate for viewing angle
+        self.y = int(self.y + self.height * .30) # increase y to compensate for viewing angle
         self.center = (self.x, self.y)
         self.prev_centers = [self.center]
         self.prev_times = [time.time()]

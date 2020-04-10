@@ -43,7 +43,7 @@ class AoI():
         self.relevant_classes = get_relevant_classes(self.label)
         self.line = line
         self.area = area
-        self.line_color = (255, 255, 0)
+        self.line_color = (50,255,50)
         self.area_color = (0, 255, 255)
         self.crossed = False
         self.objects_crossed = []

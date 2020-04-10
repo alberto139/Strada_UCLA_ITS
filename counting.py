@@ -75,34 +75,59 @@ def class_count_area(aois, detections, df, upload, frame_time):
         aoi.active = False
         for obj in detections:
             #obj.active = False
-            if len(obj.prev_centers) > 2:
+
+
+            # special case for cyclist 
+            if obj.cls_string == "cyclist":
+                obj.prev_centers.append(obj.center)
+                obj.prev_centers.append(obj.center)
+                obj.center = (obj.x, int(obj.y + obj.y *.05))
+
+
+            if len(obj.prev_centers) > 2 or obj.cls_string == 'cyclist':
                 current_center= obj.prev_centers[-1]
                 prev_center = obj.prev_centers[-2]
 
                 point = Point(prev_center[0], prev_center[1])
 
                 # special case for bike lane area
-                # since objects are in the area likely to corss the bike lane in order to get to the parking spaces
+                # since objects are in the area likely to cross the bike lane in order to get to the parking spaces
                 # only tracked cars parked in bile lane (assume they are in the bike lane for more than 20 seconds)
                 if aoi.label == 'bike_lane':
-                    None
+                    if obj.cls_string == 'cyclist' and aoi.polygon.contains(point) and (not obj.id in aoi.objects_crossed):
+                        obj.active = True
+                        aoi.active = True
+                        aoi.line_color = (50,255,50)
+                        print("Cyclist " + str(obj.id) + " in Bike Lane")
 
-                if not aoi.label == 'space_1' and not aoi.label == 'space_2':
-                    continue
-
-
+                    # case for car in bike lane:
+                    if obj.cls_string == 'car' and aoi.polygon.contains(point):
+                        print("!!!CAR IN BIKE LANE!!!!")
+                        aoi.line_color = (20, 20, 255)
+                        aoi.active = True
+                        obj.active = True
+                        #cv2.waitKey(0)
                     
-                # First time seeing object in area
-                if aoi.polygon.contains(point) and (not obj.id in aoi.objects_crossed):
+
+                    # Add seen object to aoi memory
                     aoi.objects_crossed.append(obj.id)
-                    obj.in_time = frame_time
-                    obj.active = True
-                    print("Object " + str(obj.id) + " entered area " + str(aoi.label))
-                
-                # seeing object in are NOT for the first time
-                elif aoi.polygon.contains(point):
-                    obj.active = True
-                    aoi.active = True
+
+
+                # Case for cars in the parking space
+                if aoi.label == 'space_1' or aoi.label == 'space_2' and obj.cls_string == 'car':
+                    
+                    
+                    # First time seeing object in area
+                    if aoi.polygon.contains(point) and (not obj.id in aoi.objects_crossed):
+                        aoi.objects_crossed.append(obj.id)
+                        obj.in_time = frame_time
+                        obj.active = True
+                        print("Car " + str(obj.id) + " entered area " + str(aoi.label))
+                    
+                    # seeing object in are NOT for the first time
+                    elif aoi.polygon.contains(point):
+                        obj.active = True
+                        aoi.active = True
 
 
 

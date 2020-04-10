@@ -30,7 +30,7 @@ def single():
     #img = utils.rotate(img)
     ### JSON Files ###
     #line_json = 'jsons/cross_lines.json'
-    area_json = 'jsons/its_areas.json'
+    area_json = 'jsons/its_areas_new.json'
 
     print("image size")
     print((width, height))
@@ -112,8 +112,8 @@ def single():
                         if output_dict['detection_scores'][i] > conf_threshold:
                             temp_object = object_class.Object(img, output_dict['detection_boxes'][i], output_dict['detection_classes'][i])
                             # if not a car, skip
-                            if not temp_object.cls_string == 'car':
-                                continue
+                            #if not temp_object.cls_string == 'car':
+                            #    continue
                             new_detections.append(temp_object)
 
                     if first_detection:
@@ -134,7 +134,7 @@ def single():
                     prev_detections = [prev_detections[x] for x in pick]
 
                     #speed estimation
-                    prev_detections = utils.speed_estimation(prev_detections)
+                    #prev_detections = utils.speed_estimation(prev_detections)
 
                     # counting
                     #counting.count(prev_detections, lines, areas)
@@ -164,19 +164,23 @@ def single():
                     img = utils.draw_aoi_active(img, aois)
                 if draw_text:
                     img = utils.draw_text_active(img, prev_detections)
+                    #img = utils.draw_text(img, prev_detections)
                 if draw_paths:
                     img = utils.draw_paths_active(img, prev_detections)
+                    #img = utils.draw_paths(img, prev_detections)
                 if draw_boxes:
                     img = utils.draw_boxes_active(img, prev_detections)
+                    #img = utils.draw_boxes(img, prev_detections)
 
                 if key_press == 115: # s
                     cv2.imwrite(str(time.time()) + "screen_shot.png", img)
 
 
                 cv2.imshow('detection', img)
-                print("FPS: " + str( total_count /  (time.time() -  start_time)))
-                print("Time Elapsed: " + str(time.time() - start_time))
-                print(img.shape)
+                cv2.waitKey(1)
+                #print("FPS: " + str( total_count /  (time.time() -  start_time)))
+                #print("Time Elapsed: " + str(time.time() - start_time))
+                #print(img.shape)
                 out.write(img)
 
 single()

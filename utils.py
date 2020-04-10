@@ -10,8 +10,8 @@ import time
 
 
 def match(prev_detections, new_detections, max_id, frame_time):
-    distance_threshold = 50 # what to make 250
-    missing_threshold = 8 # 10
+    distance_threshold = 80 # what to make 250
+    missing_threshold = 5 #8 # 10
     difference_threshold= 3500 #2000 #82
     histogram_threshold = 0.20
     test = False
@@ -59,36 +59,6 @@ def match(prev_detections, new_detections, max_id, frame_time):
                         potential_matches_difference.append(difference_score)
                         #prev.match = True
 
-                        if test and prev.id == 8:
-                            print("-------MATCH-------")
-                            cv2.imshow("prev_potential_match", prev.subimg)
-                            cv2.imshow("new_potential_match", new.subimg)
-                            cv2.imshow('difference', result)
-
-                            print("ID: " + str(prev.id))
-                            print("difference: " + str(difference_score))
-                            print("distance: " + str(distance))
-                            print("hist: " + str(hist_comp))
-                            print((abs(hist_comp) > histogram_threshold))
-                            print("class: " + str(prev.cls))
-
-                            cv2.waitKey(1)
-
-                    else:
-                        None
-                        # No match
-                        if test and False:
-                            print("****************NO MATCH****************")
-                            cv2.imshow("NO MATCH new", new.subimg)
-                            cv2.imshow("NO MATCH prev", prev.subimg)
-                            cv2.imshow('difference: ', result)
-
-                            print("ID: " + str(prev.id))
-                            print("difference: " + str(difference_score))
-                            print("distance: " + str(distance))
-                            print("hist: " + str(hist_comp))
-                            print("class: " + str(prev.cls))
-                            cv2.waitKey(1)
             
             best_match_score = float("inf") # Lower is better
             #print('len potential matches: ' + str(len(potential_matches)))
@@ -127,8 +97,8 @@ def match(prev_detections, new_detections, max_id, frame_time):
             (prev.ymin, prev.xmin, prev.ymax, prev.xmax) = match.box
             prev.frame = match.frame
             prev.subimg = match.frame[match.ymin:match.ymax, match.xmin:match.xmax]
-            prev.x = match.xmin +(match.xmax - match.xmin) // 2
-            prev.y = match.ymin +(match.ymax - match.ymin) // 2
+            prev.x = int(match.xmin + (match.xmax - match.xmin) / 1.5)
+            prev.y = int(match.ymin + (match.ymax - match.ymin) / 1.5)
             prev.center = (match.x, match.y)
             prev.prev_centers.append(match.center)
             prev.prev_times.append(frame_time)
@@ -145,10 +115,8 @@ def match(prev_detections, new_detections, max_id, frame_time):
     for prev in prev_detections:
         if not prev.match:
             prev.missing += 1
+            prev.active = False
         if prev.missing > missing_threshold or (prev.crossed and prev.missing > 3) :
-            prev_detections.remove(prev)
-        # TEMP removal of certain IDs
-        if prev.id == 376 or prev.id ==938:
             prev_detections.remove(prev)
 
     # No Match for new
@@ -330,9 +298,10 @@ def fps(start_time, count, avg_fps, name, disp = False):
 
 def draw_paths(frame, detections):
 
-    color = (255,0,255)
+    color = (50,50,255)
 
     for obj in detections:
+        
         centers = obj.prev_centers
         centers.reverse()
 
@@ -555,7 +524,8 @@ def draw_aoi_active(img, aois):
         area = aoi.area
         pts = [(point[0], point[1]) for point in area]
         pts = np.array(pts, np.int32)
-        cv2.polylines(img,[pts],True,(50,255,50), thickness = 2) 
+        #cv2.polylines(img,[pts],True,(50,255,50), thickness = 2) 
+        cv2.polylines(img,[pts],True,aoi.line_color, thickness = 2) 
     return img
 
 def write_counts(frame, counts):
